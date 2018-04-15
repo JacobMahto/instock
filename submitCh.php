@@ -14,10 +14,12 @@ if (isset($_POST['matSubmit'])) {
    for($i=1;$i<=count($_SESSION['matNameInf']);$i++){
        array_push($_SESSION['matValueInf'],$_POST["mat$i"],$_POST["num$i"],$_POST["wt$i"],$_POST["len$i"]);
    }
+   
+   $returningChallanNo = $_POST['ch_no_return'];
   // echo "<br>Hello<br>";
    print_r($_SESSION['matNameInf']);
    print_r($_SESSION['matValueInf']);
-   updateChMatInfo($_SESSION['chNo'],$_SESSION['matNameInf'] , $_SESSION['matValueInf']);
+   updateChMatInfo($_SESSION['chNo'],$_SESSION['matNameInf'] , $_SESSION['matValueInf'] , $returningChallanNo);
 }
 
 ?>
@@ -69,7 +71,7 @@ if (isset($_POST['matSubmit'])) {
         <div class="container">
             <form class="form" action="submitCh.php" method="post">
                 <div class="row">
-                    <div class="col-6">
+                    <div class="col">
                         <label for="ch_no">Select Challan No.</label>
                         <div class="input-group">                            
                             <?php
@@ -82,9 +84,12 @@ if (isset($_POST['matSubmit'])) {
                             ?>
                             <button type="submit" name="chNoSubmit" class="btn input-group-addon btn-primary">View</button>
                         </div>
-
                     </div>
-                    <div class="col-6"><label for="date_fi">Returning Date</label>
+                    
+                    <div class="col"><label for="ch_no">Enter Receiving Challan No.</label>
+                        <input type="text" name="ch_no_return" class="form-control"></div>
+                        
+                    <div class="col"><label for="date_fi">Returning Date</label>
                         <input type="date" name="date_fi" class="form-control"></div>
                 </div>
                 <hr>

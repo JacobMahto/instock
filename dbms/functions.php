@@ -27,7 +27,7 @@ function getChList(){
 //to insert the challan info to sql table ch_info_gen
 function setChallan($arrCh){
     global $connection;
-    $insquery = "INSERT INTO ch_info_gen VALUES($arrCh[0],'$arrCh[1]',null,'$arrCh[2]','$arrCh[3]');";
+    $insquery = "INSERT INTO ch_info_gen(ch_no,date_in,date_fi,job_id,nature) VALUES($arrCh[0],'$arrCh[1]',null,'$arrCh[2]','$arrCh[3]');";
     $result = mysqli_query($connection, $insquery);
     if($result){
          return $result;
@@ -72,9 +72,10 @@ function getChMat($chNo){
 }
 
 //to update mat-info for returning, from table ch_mat
-function updateChMatInfo($challanNo,$matName,$matValue){
+function updateChMatInfo($challanNo,$matName,$matValue,$challanNoReturn){
     global $connection;
     $matNameIndex=0;
+    $onlyOnce = 0;//for updating the returning challan column in the ch_info_gen , it should not be looped , rather the updation query should only work once.
     for($i=0;$i<count($matValue);$i=$i+4,$matNameIndex++){
         $indNum = $i+1;
         $indKg = $i+2;
@@ -83,9 +84,18 @@ function updateChMatInfo($challanNo,$matName,$matValue){
         if(!trim($matValue[$indNum])){$matValue[$indNum]='null';}
             if(!trim($matValue[$indKg])){$matValue[$indKg]='null';}
             if(!trim($matValue[$indLen])){$matValue[$indLen]='null';}    
+            
+            if($onlyOnce==0){                
+            $updateQueryOnlyOnce = "UPDATE ch_info_gen SET ch_no_return=$challanNoReturn WHERE ch_no=$challanNo;";
+            $resultOnlyOnce = mysqli_query($connection,$updateQueryOnlyOnce);
+            $onlyOnce++;
+            }
+            
         $updateQuery = "UPDATE ch_mat SET mat_name='$matValue[$i]',mat_nf=$matValue[$indNum],mat_kf=$matValue[$indKg],mat_mf=$matValue[$indLen] WHERE ch_no=$challanNo AND mat_name='$matName[$matNameIndex]';";
       //  echo "<br>".$updateQuery."<br>";
         $result = mysqli_query($connection, $updateQuery);
+        
+        
     if($result){
          
     }
