@@ -16,10 +16,11 @@ if (isset($_POST['matSubmit'])) {
    }
    
    $returningChallanNo = $_POST['ch_no_return'];
+   $date_return = $_POST['date_fi'];
   // echo "<br>Hello<br>";
    print_r($_SESSION['matNameInf']);
    print_r($_SESSION['matValueInf']);
-   updateChMatInfo($_SESSION['chNo'],$_SESSION['matNameInf'] , $_SESSION['matValueInf'] , $returningChallanNo);
+   updateChMatInfo($_SESSION['chNo'],$_SESSION['matNameInf'] , $_SESSION['matValueInf'] , $returningChallanNo,$date_return);
 }
 
 ?>

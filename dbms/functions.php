@@ -2,8 +2,6 @@
 session_start();
 //initialize session variables
 
-
-
 include 'dbConnect.php';
 $result = null;
 
@@ -72,7 +70,7 @@ function getChMat($chNo){
 }
 
 //to update mat-info for returning, from table ch_mat
-function updateChMatInfo($challanNo,$matName,$matValue,$challanNoReturn){
+function updateChMatInfo($challanNo,$matName,$matValue,$challanNoReturn,$date_return){
     global $connection;
     $matNameIndex=0;
     $onlyOnce = 0;//for updating the returning challan column in the ch_info_gen , it should not be looped , rather the updation query should only work once.
@@ -86,9 +84,16 @@ function updateChMatInfo($challanNo,$matName,$matValue,$challanNoReturn){
             if(!trim($matValue[$indLen])){$matValue[$indLen]='null';}    
             
             if($onlyOnce==0){                
-            $updateQueryOnlyOnce = "UPDATE ch_info_gen SET ch_no_return=$challanNoReturn WHERE ch_no=$challanNo;";
+            $updateQueryOnlyOnce = "UPDATE ch_info_gen SET ch_no_return=$challanNoReturn , date_fi = '$date_return' WHERE ch_no=$challanNo;";
             $resultOnlyOnce = mysqli_query($connection,$updateQueryOnlyOnce);
             $onlyOnce++;
+            echo $updateQueryOnlyOnce;
+            if($resultOnlyOnce){
+                echo 'ye';
+            }
+            else {
+                echo 'no'.mysqli_error($connection);
+            }
             }
             
         $updateQuery = "UPDATE ch_mat SET mat_name='$matValue[$i]',mat_nf=$matValue[$indNum],mat_kf=$matValue[$indKg],mat_mf=$matValue[$indLen] WHERE ch_no=$challanNo AND mat_name='$matName[$matNameIndex]';";
@@ -105,5 +110,23 @@ function updateChMatInfo($challanNo,$matName,$matValue,$challanNoReturn){
     }
     }
     
+}
+
+function getForExcel(){
+    global $connection;
+    $query = "select ch_info_gen.ch_no,date_in,mat_name,mat_ni,mat_ki,mat_mi,job_worker,job_addr,nature,ch_no_return,date_fi,mat_nf,mat_kf,mat_mf ,(mat_ni-mat_nf) as 'diff_n',(mat_ki-mat_kf) as 'diff_k',(mat_mi-mat_mf) as 'diff_m' from ch_info_gen,ch_mat,job where ch_info_gen.ch_no=ch_mat.ch_no AND ch_info_gen.job_id=job.id;";
+    $resultList = mysqli_query($connection, $query);
+    if($resultList){
+        return $resultList;
+    }
+    else{
+        echo 'no'.mysqli_error($connection);
+    }
+}
+
+function correctDate($str){  
+$str = date_create($str);
+$str = date_format($str, 'd-m-Y');
+return $str;
 }
 ?>
